@@ -1,0 +1,2228 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "a832e19c",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:19.183593Z",
+     "iopub.status.busy": "2024-06-09T09:30:19.183110Z",
+     "iopub.status.idle": "2024-06-09T09:30:20.175728Z",
+     "shell.execute_reply": "2024-06-09T09:30:20.174394Z"
+    },
+    "papermill": {
+     "duration": 1.009931,
+     "end_time": "2024-06-09T09:30:20.179014",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:19.169083",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "/kaggle/input/loan-dataset/LoanDataset - LoansDatasest.csv\n"
+     ]
+    }
+   ],
+   "source": [
+    "# This Python 3 environment comes with many helpful analytics libraries installed\n",
+    "# It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python\n",
+    "# For example, here's several helpful packages to load\n",
+    "\n",
+    "import numpy as np # linear algebra\n",
+    "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n",
+    "\n",
+    "# Input data files are available in the read-only \"../input/\" directory\n",
+    "# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory\n",
+    "\n",
+    "import os\n",
+    "for dirname, _, filenames in os.walk('/kaggle/input'):\n",
+    "    for filename in filenames:\n",
+    "        print(os.path.join(dirname, filename))\n",
+    "\n",
+    "# You can write up to 20GB to the current directory (/kaggle/working/) that gets preserved as output when you create a version using \"Save & Run All\" \n",
+    "# You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3d18e026",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012147,
+     "end_time": "2024-06-09T09:30:20.203768",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:20.191621",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Importing the library"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "e1709aa0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:20.231109Z",
+     "iopub.status.busy": "2024-06-09T09:30:20.230542Z",
+     "iopub.status.idle": "2024-06-09T09:30:21.984006Z",
+     "shell.execute_reply": "2024-06-09T09:30:21.982094Z"
+    },
+    "papermill": {
+     "duration": 1.769894,
+     "end_time": "2024-06-09T09:30:21.987074",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:20.217180",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import sklearn \n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b8b181c1",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012024,
+     "end_time": "2024-06-09T09:30:22.013914",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.001890",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Reading  and reviewing the data \n",
+    "* Reading the data \n",
+    "* checking for the stats of data by Using info and describe fxn"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "cedf6bf5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:22.041488Z",
+     "iopub.status.busy": "2024-06-09T09:30:22.041021Z",
+     "iopub.status.idle": "2024-06-09T09:30:22.183686Z",
+     "shell.execute_reply": "2024-06-09T09:30:22.182408Z"
+    },
+    "papermill": {
+     "duration": 0.159932,
+     "end_time": "2024-06-09T09:30:22.186489",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.026557",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "data=pd.read_csv(\"/kaggle/input/loan-dataset/LoanDataset - LoansDatasest.csv\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "aba34f6d",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:22.212784Z",
+     "iopub.status.busy": "2024-06-09T09:30:22.212348Z",
+     "iopub.status.idle": "2024-06-09T09:30:22.344647Z",
+     "shell.execute_reply": "2024-06-09T09:30:22.343265Z"
+    },
+    "papermill": {
+     "duration": 0.150074,
+     "end_time": "2024-06-09T09:30:22.348627",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.198553",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   customer_id  customer_age customer_income home_ownership  \\\n",
+      "0          1.0            22           59000           RENT   \n",
+      "1          2.0            21            9600            OWN   \n",
+      "2          3.0            25            9600       MORTGAGE   \n",
+      "3          4.0            23           65500           RENT   \n",
+      "4          5.0            24           54400           RENT   \n",
+      "\n",
+      "   employment_duration loan_intent loan_grade   loan_amnt  loan_int_rate  \\\n",
+      "0                123.0    PERSONAL          C  £35,000.00          16.02   \n",
+      "1                  5.0   EDUCATION          A   £1,000.00          11.14   \n",
+      "2                  1.0     MEDICAL          B   £5,500.00          12.87   \n",
+      "3                  4.0     MEDICAL          B  £35,000.00          15.23   \n",
+      "4                  8.0     MEDICAL          B  £35,000.00          14.27   \n",
+      "\n",
+      "   term_years historical_default  cred_hist_length Current_loan_status  \n",
+      "0          10                  Y                 3             DEFAULT  \n",
+      "1           1                NaN                 2          NO DEFAULT  \n",
+      "2           5                  N                 3             DEFAULT  \n",
+      "3          10                  N                 2             DEFAULT  \n",
+      "4          10                  Y                 4             DEFAULT  \n",
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 13 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_id          32583 non-null  float64\n",
+      " 1   customer_age         32586 non-null  int64  \n",
+      " 2   customer_income      32586 non-null  object \n",
+      " 3   home_ownership       32586 non-null  object \n",
+      " 4   employment_duration  31691 non-null  float64\n",
+      " 5   loan_intent          32586 non-null  object \n",
+      " 6   loan_grade           32586 non-null  object \n",
+      " 7   loan_amnt            32585 non-null  object \n",
+      " 8   loan_int_rate        29470 non-null  float64\n",
+      " 9   term_years           32586 non-null  int64  \n",
+      " 10  historical_default   11849 non-null  object \n",
+      " 11  cred_hist_length     32586 non-null  int64  \n",
+      " 12  Current_loan_status  32582 non-null  object \n",
+      "dtypes: float64(3), int64(3), object(7)\n",
+      "memory usage: 3.2+ MB\n",
+      "None\n",
+      "        customer_id  customer_age  employment_duration  loan_int_rate  \\\n",
+      "count  32583.000000  32586.000000         31691.000000   29470.000000   \n",
+      "mean   16289.497806     27.732769             4.790161      11.011553   \n",
+      "std     9405.919628      6.360528             4.142746       3.240440   \n",
+      "min        1.000000      3.000000             0.000000       5.420000   \n",
+      "25%     8144.500000     23.000000             2.000000       7.900000   \n",
+      "50%    16288.000000     26.000000             4.000000      10.990000   \n",
+      "75%    24433.500000     30.000000             7.000000      13.470000   \n",
+      "max    32581.000000    144.000000           123.000000      23.220000   \n",
+      "\n",
+      "         term_years  cred_hist_length  \n",
+      "count  32586.000000      32586.000000  \n",
+      "mean       4.761738          5.804026  \n",
+      "std        2.471107          4.055078  \n",
+      "min        1.000000          2.000000  \n",
+      "25%        3.000000          3.000000  \n",
+      "50%        4.000000          4.000000  \n",
+      "75%        7.000000          8.000000  \n",
+      "max       10.000000         30.000000  \n",
+      "customer_id                3\n",
+      "customer_age               0\n",
+      "customer_income            0\n",
+      "home_ownership             0\n",
+      "employment_duration      895\n",
+      "loan_intent                0\n",
+      "loan_grade                 0\n",
+      "loan_amnt                  1\n",
+      "loan_int_rate           3116\n",
+      "term_years                 0\n",
+      "historical_default     20737\n",
+      "cred_hist_length           0\n",
+      "Current_loan_status        4\n",
+      "dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.head())\n",
+    "print(data.info())\n",
+    "print(data.describe())\n",
+    "print(data.isna().sum())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b579542f",
+   "metadata": {
+    "papermill": {
+     "duration": 0.01262,
+     "end_time": "2024-06-09T09:30:22.374742",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.362122",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Analysis of the  data:\n",
+    "* There are missing value in the data\n",
+    "* There are 12 colunmns and 32586 Rows\n",
+    "* The  data related to Loan_department and we can make the use of this data for the financial predictions."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dc850595",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012055,
+     "end_time": "2024-06-09T09:30:22.400218",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.388163",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Removing the columns which is not important for the Analysis\n",
+    "* Customer_ID: As there is no need of this data for the predictions \n",
+    "* Historical Default : This is having lots of value missing in this so we need more values to get the insight about this , for now we are removing the this column"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "ed9dd0e3",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:22.427568Z",
+     "iopub.status.busy": "2024-06-09T09:30:22.427057Z",
+     "iopub.status.idle": "2024-06-09T09:30:22.440543Z",
+     "shell.execute_reply": "2024-06-09T09:30:22.439209Z"
+    },
+    "papermill": {
+     "duration": 0.030038,
+     "end_time": "2024-06-09T09:30:22.443040",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.413002",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "data.drop(columns=['customer_id','historical_default'],axis=1,inplace=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "675ca974",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:22.469970Z",
+     "iopub.status.busy": "2024-06-09T09:30:22.469545Z",
+     "iopub.status.idle": "2024-06-09T09:30:22.535877Z",
+     "shell.execute_reply": "2024-06-09T09:30:22.534529Z"
+    },
+    "papermill": {
+     "duration": 0.083132,
+     "end_time": "2024-06-09T09:30:22.538764",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.455632",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   customer_age customer_income home_ownership  employment_duration  \\\n",
+      "0            22           59000           RENT                123.0   \n",
+      "1            21            9600            OWN                  5.0   \n",
+      "2            25            9600       MORTGAGE                  1.0   \n",
+      "3            23           65500           RENT                  4.0   \n",
+      "4            24           54400           RENT                  8.0   \n",
+      "\n",
+      "  loan_intent loan_grade   loan_amnt  loan_int_rate  term_years  \\\n",
+      "0    PERSONAL          C  £35,000.00          16.02          10   \n",
+      "1   EDUCATION          A   £1,000.00          11.14           1   \n",
+      "2     MEDICAL          B   £5,500.00          12.87           5   \n",
+      "3     MEDICAL          B  £35,000.00          15.23          10   \n",
+      "4     MEDICAL          B  £35,000.00          14.27          10   \n",
+      "\n",
+      "   cred_hist_length Current_loan_status  \n",
+      "0                 3             DEFAULT  \n",
+      "1                 2          NO DEFAULT  \n",
+      "2                 3             DEFAULT  \n",
+      "3                 2             DEFAULT  \n",
+      "4                 4             DEFAULT  \n",
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 11 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_age         32586 non-null  int64  \n",
+      " 1   customer_income      32586 non-null  object \n",
+      " 2   home_ownership       32586 non-null  object \n",
+      " 3   employment_duration  31691 non-null  float64\n",
+      " 4   loan_intent          32586 non-null  object \n",
+      " 5   loan_grade           32586 non-null  object \n",
+      " 6   loan_amnt            32585 non-null  object \n",
+      " 7   loan_int_rate        29470 non-null  float64\n",
+      " 8   term_years           32586 non-null  int64  \n",
+      " 9   cred_hist_length     32586 non-null  int64  \n",
+      " 10  Current_loan_status  32582 non-null  object \n",
+      "dtypes: float64(2), int64(3), object(6)\n",
+      "memory usage: 2.7+ MB\n",
+      "None\n",
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 11 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_age         32586 non-null  int64  \n",
+      " 1   customer_income      32586 non-null  object \n",
+      " 2   home_ownership       32586 non-null  object \n",
+      " 3   employment_duration  31691 non-null  float64\n",
+      " 4   loan_intent          32586 non-null  object \n",
+      " 5   loan_grade           32586 non-null  object \n",
+      " 6   loan_amnt            32585 non-null  object \n",
+      " 7   loan_int_rate        29470 non-null  float64\n",
+      " 8   term_years           32586 non-null  int64  \n",
+      " 9   cred_hist_length     32586 non-null  int64  \n",
+      " 10  Current_loan_status  32582 non-null  object \n",
+      "dtypes: float64(2), int64(3), object(6)\n",
+      "memory usage: 2.7+ MB\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.head())\n",
+    "print(data.info())\n",
+    "data.info()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5cfd7505",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012172,
+     "end_time": "2024-06-09T09:30:22.563832",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.551660",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Data Cleaning \n",
+    "1:looking for the missing value and type of data in each colunmns one by one"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "5cfd68a6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:22.591388Z",
+     "iopub.status.busy": "2024-06-09T09:30:22.590954Z",
+     "iopub.status.idle": "2024-06-09T09:30:22.625010Z",
+     "shell.execute_reply": "2024-06-09T09:30:22.623722Z"
+    },
+    "papermill": {
+     "duration": 0.051586,
+     "end_time": "2024-06-09T09:30:22.627990",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.576404",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 11 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_age         32586 non-null  int64  \n",
+      " 1   customer_income      32586 non-null  object \n",
+      " 2   home_ownership       32586 non-null  object \n",
+      " 3   employment_duration  31691 non-null  float64\n",
+      " 4   loan_intent          32586 non-null  object \n",
+      " 5   loan_grade           32586 non-null  object \n",
+      " 6   loan_amnt            32585 non-null  object \n",
+      " 7   loan_int_rate        29470 non-null  float64\n",
+      " 8   term_years           32586 non-null  int64  \n",
+      " 9   cred_hist_length     32586 non-null  int64  \n",
+      " 10  Current_loan_status  32582 non-null  object \n",
+      "dtypes: float64(2), int64(3), object(6)\n",
+      "memory usage: 2.7+ MB\n",
+      "None\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.info())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "132c5a54",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012578,
+     "end_time": "2024-06-09T09:30:22.653438",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.640860",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Inspecting the customer Income columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "bf355ad2",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:22.681134Z",
+     "iopub.status.busy": "2024-06-09T09:30:22.680695Z",
+     "iopub.status.idle": "2024-06-09T09:30:22.691921Z",
+     "shell.execute_reply": "2024-06-09T09:30:22.690427Z"
+    },
+    "papermill": {
+     "duration": 0.027935,
+     "end_time": "2024-06-09T09:30:22.694405",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.666470",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0    59000\n",
+      "1     9600\n",
+      "2     9600\n",
+      "3    65500\n",
+      "4    54400\n",
+      "Name: customer_income, dtype: object\n",
+      "['59000' '9600' '65500' ... '720000' '1900000' '4888']\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.customer_income.head())\n",
+    "print(data.customer_income.unique())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "59ab7adb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:22.722487Z",
+     "iopub.status.busy": "2024-06-09T09:30:22.722036Z",
+     "iopub.status.idle": "2024-06-09T09:30:22.757289Z",
+     "shell.execute_reply": "2024-06-09T09:30:22.756151Z"
+    },
+    "papermill": {
+     "duration": 0.052685,
+     "end_time": "2024-06-09T09:30:22.760213",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.707528",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Handling the ',' with the help of function\n",
+    "def handle_customer_income(value):\n",
+    "    value=str(value)\n",
+    "    value=value.replace(',','')\n",
+    "    return float(value)\n",
+    "\n",
+    "data['customer_income']=data['customer_income'].apply(handle_customer_income)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "41aede46",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:22.788462Z",
+     "iopub.status.busy": "2024-06-09T09:30:22.787922Z",
+     "iopub.status.idle": "2024-06-09T09:30:22.818877Z",
+     "shell.execute_reply": "2024-06-09T09:30:22.817615Z"
+    },
+    "papermill": {
+     "duration": 0.048159,
+     "end_time": "2024-06-09T09:30:22.821584",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.773425",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 11 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_age         32586 non-null  int64  \n",
+      " 1   customer_income      32586 non-null  float64\n",
+      " 2   home_ownership       32586 non-null  object \n",
+      " 3   employment_duration  31691 non-null  float64\n",
+      " 4   loan_intent          32586 non-null  object \n",
+      " 5   loan_grade           32586 non-null  object \n",
+      " 6   loan_amnt            32585 non-null  object \n",
+      " 7   loan_int_rate        29470 non-null  float64\n",
+      " 8   term_years           32586 non-null  int64  \n",
+      " 9   cred_hist_length     32586 non-null  int64  \n",
+      " 10  Current_loan_status  32582 non-null  object \n",
+      "dtypes: float64(3), int64(3), object(5)\n",
+      "memory usage: 2.7+ MB\n",
+      "None\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.info())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "002431ec",
+   "metadata": {
+    "papermill": {
+     "duration": 0.012974,
+     "end_time": "2024-06-09T09:30:22.847893",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.834919",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Inspecting the home_ownership column\n",
+    "### This is Categorical varibale \n",
+    "* We need to check for the missing values\n",
+    "* We need to Encode those value to some number as the machien understand the numbers well "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "8e56d2e2",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:22.876495Z",
+     "iopub.status.busy": "2024-06-09T09:30:22.876034Z",
+     "iopub.status.idle": "2024-06-09T09:30:22.889608Z",
+     "shell.execute_reply": "2024-06-09T09:30:22.888307Z"
+    },
+    "papermill": {
+     "duration": 0.03069,
+     "end_time": "2024-06-09T09:30:22.892035",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.861345",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0\n",
+      "['RENT' 'OWN' 'MORTGAGE' 'OTHER']\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.home_ownership.isna().sum())\n",
+    "print(data.home_ownership.unique())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "8537bd16",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:22.921350Z",
+     "iopub.status.busy": "2024-06-09T09:30:22.920265Z",
+     "iopub.status.idle": "2024-06-09T09:30:22.971140Z",
+     "shell.execute_reply": "2024-06-09T09:30:22.969859Z"
+    },
+    "papermill": {
+     "duration": 0.068571,
+     "end_time": "2024-06-09T09:30:22.974120",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.905549",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Encoding the categorical variable\n",
+    "from sklearn.preprocessing  import LabelEncoder\n",
+    "encoder=LabelEncoder()\n",
+    "data['home_ownership']=encoder.fit_transform(data['home_ownership'])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "d8fd38e8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.003008Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.002574Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.029872Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.028609Z"
+    },
+    "papermill": {
+     "duration": 0.045111,
+     "end_time": "2024-06-09T09:30:23.032687",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:22.987576",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 11 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_age         32586 non-null  int64  \n",
+      " 1   customer_income      32586 non-null  float64\n",
+      " 2   home_ownership       32586 non-null  int64  \n",
+      " 3   employment_duration  31691 non-null  float64\n",
+      " 4   loan_intent          32586 non-null  object \n",
+      " 5   loan_grade           32586 non-null  object \n",
+      " 6   loan_amnt            32585 non-null  object \n",
+      " 7   loan_int_rate        29470 non-null  float64\n",
+      " 8   term_years           32586 non-null  int64  \n",
+      " 9   cred_hist_length     32586 non-null  int64  \n",
+      " 10  Current_loan_status  32582 non-null  object \n",
+      "dtypes: float64(3), int64(4), object(4)\n",
+      "memory usage: 2.7+ MB\n",
+      "None\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.info())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2b029329",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013574,
+     "end_time": "2024-06-09T09:30:23.060131",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.046557",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Analysis of employement duration columns \n",
+    "* there are missing values in this columns so need to rectify it with the mean \n",
+    "* Also there is may be an outlier we need to find out and then rectify as well "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "42657240",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.089454Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.089028Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.098295Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.097110Z"
+    },
+    "papermill": {
+     "duration": 0.026838,
+     "end_time": "2024-06-09T09:30:23.100742",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.073904",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "895\n",
+      "[123.   5.   1.   4.   8.   2.   6.   7.   0.   9.   3.  10.  nan  11.\n",
+      "  18.  12.  17.  14.  16.  13.  19.  15.  20.  22.  21.  24.  23.  26.\n",
+      "  25.  27.  28.  31.  41.  34.  29.  38.  30.]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.employment_duration.isna().sum())\n",
+    "print(data.employment_duration.unique())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "9cdf4520",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.131336Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.130397Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.343138Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.341953Z"
+    },
+    "papermill": {
+     "duration": 0.231231,
+     "end_time": "2024-06-09T09:30:23.345939",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.114708",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "#Handling the \n",
+    "def handle_employement_duration(value):\n",
+    "    value=str(value).split('.')\n",
+    "    value=value[0]\n",
+    "    if value=='nan':\n",
+    "        return int(data.employment_duration.mean())\n",
+    "    elif int(value)>30:\n",
+    "        return 12\n",
+    "    else:\n",
+    "        return int(value)\n",
+    "    \n",
+    "    \n",
+    "data['employment_duration']=data['employment_duration'].apply(handle_employement_duration)\n",
+    "    "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "63d9fea9",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.375916Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.375504Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.405201Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.403878Z"
+    },
+    "papermill": {
+     "duration": 0.047634,
+     "end_time": "2024-06-09T09:30:23.407736",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.360102",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0\n",
+      "[12  5  1  4  8  2  6  7  0  9  3 10 11 18 17 14 16 13 19 15 20 22 21 24\n",
+      " 23 26 25 27 28 29 30]\n",
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 11 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_age         32586 non-null  int64  \n",
+      " 1   customer_income      32586 non-null  float64\n",
+      " 2   home_ownership       32586 non-null  int64  \n",
+      " 3   employment_duration  32586 non-null  int64  \n",
+      " 4   loan_intent          32586 non-null  object \n",
+      " 5   loan_grade           32586 non-null  object \n",
+      " 6   loan_amnt            32585 non-null  object \n",
+      " 7   loan_int_rate        29470 non-null  float64\n",
+      " 8   term_years           32586 non-null  int64  \n",
+      " 9   cred_hist_length     32586 non-null  int64  \n",
+      " 10  Current_loan_status  32582 non-null  object \n",
+      "dtypes: float64(2), int64(5), object(4)\n",
+      "memory usage: 2.7+ MB\n",
+      "None\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.employment_duration.isna().sum())\n",
+    "print(data.employment_duration.unique())\n",
+    "print(data.info())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ffaf7f27",
+   "metadata": {
+    "papermill": {
+     "duration": 0.013651,
+     "end_time": "2024-06-09T09:30:23.435450",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.421799",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Inspecting the loan intent \n",
+    "* this is also the categorical variable and need to check for the missig value and rectify it with some new method , in this i tried to rectify that as nan mapped to integer"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "545a058c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.466560Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.466115Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.479474Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.478126Z"
+    },
+    "papermill": {
+     "duration": 0.032063,
+     "end_time": "2024-06-09T09:30:23.482219",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.450156",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['PERSONAL' 'EDUCATION' 'MEDICAL' 'VENTURE' 'HOMEIMPROVEMENT'\n",
+      " 'DEBTCONSOLIDATION']\n",
+      "0\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.loan_intent.unique())\n",
+    "print(data.loan_intent.isna().sum())\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "03693e10",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.513554Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.512554Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.528495Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.527274Z"
+    },
+    "papermill": {
+     "duration": 0.034025,
+     "end_time": "2024-06-09T09:30:23.530892",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.496867",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Encoding the categorical variable \n",
+    "from sklearn.preprocessing import LabelEncoder\n",
+    "le=LabelEncoder()\n",
+    "data['loan_intent']=le.fit_transform(data['loan_intent'])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "55253b70",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.561312Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.560843Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.586710Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.585262Z"
+    },
+    "papermill": {
+     "duration": 0.044551,
+     "end_time": "2024-06-09T09:30:23.589891",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.545340",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 11 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_age         32586 non-null  int64  \n",
+      " 1   customer_income      32586 non-null  float64\n",
+      " 2   home_ownership       32586 non-null  int64  \n",
+      " 3   employment_duration  32586 non-null  int64  \n",
+      " 4   loan_intent          32586 non-null  int64  \n",
+      " 5   loan_grade           32586 non-null  object \n",
+      " 6   loan_amnt            32585 non-null  object \n",
+      " 7   loan_int_rate        29470 non-null  float64\n",
+      " 8   term_years           32586 non-null  int64  \n",
+      " 9   cred_hist_length     32586 non-null  int64  \n",
+      " 10  Current_loan_status  32582 non-null  object \n",
+      "dtypes: float64(2), int64(6), object(3)\n",
+      "memory usage: 2.7+ MB\n",
+      "None\n",
+      "0        4\n",
+      "1        1\n",
+      "2        3\n",
+      "3        3\n",
+      "4        3\n",
+      "        ..\n",
+      "32581    4\n",
+      "32582    4\n",
+      "32583    2\n",
+      "32584    4\n",
+      "32585    3\n",
+      "Name: loan_intent, Length: 32586, dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.info())\n",
+    "print(data.loan_intent)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ad78ef0e",
+   "metadata": {
+    "papermill": {
+     "duration": 0.014802,
+     "end_time": "2024-06-09T09:30:23.619453",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.604651",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Inspecting the loan_grade "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "37b10ee8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.651994Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.651548Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.662623Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.661345Z"
+    },
+    "papermill": {
+     "duration": 0.030462,
+     "end_time": "2024-06-09T09:30:23.665269",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.634807",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.loan_grade.isna().sum())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "04f2c156",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.697549Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.697049Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.714603Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.713347Z"
+    },
+    "papermill": {
+     "duration": 0.037354,
+     "end_time": "2024-06-09T09:30:23.717591",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.680237",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "#Encoding the loan_grade variable\n",
+    "from sklearn.preprocessing import LabelEncoder\n",
+    "le=LabelEncoder()\n",
+    "data['loan_grade']=le.fit_transform(data['loan_grade'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "a98e3c7e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.751111Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.750488Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.759658Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.757937Z"
+    },
+    "papermill": {
+     "duration": 0.030396,
+     "end_time": "2024-06-09T09:30:23.763499",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.733103",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[2 0 1 3 4]\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.loan_grade.unique())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "03613685",
+   "metadata": {
+    "papermill": {
+     "duration": 0.016763,
+     "end_time": "2024-06-09T09:30:23.798129",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.781366",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Inspecting the loan_amount\n",
+    "### Loan Amount need to more work as we need to rectify the Euro sign and ','(comma) in the amount "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "337f5ba2",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.836265Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.835763Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.848132Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.846685Z"
+    },
+    "papermill": {
+     "duration": 0.036178,
+     "end_time": "2024-06-09T09:30:23.852684",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.816506",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['£35,000.00' '£1,000.00' '£5,500.00' '£2,500.00' '£1,600.00' '£4,500.00'\n",
+      " '£30,000.00' '£1,750.00' '£34,800.00' '£34,000.00' '£1,500.00'\n",
+      " '£33,950.00' '£33,000.00' '£4,575.00' '£1,400.00' '£32,500.00'\n",
+      " '£4,000.00' '£2,000.00' '£32,000.00' '£31,050.00' '£24,250.00'\n",
+      " '£7,800.00' '£20,000.00' '£10,000.00' '£25,000.00' '£18,000.00'\n",
+      " '£12,000.00' '£29,100.00' '£28,000.00' '£9,600.00' '£3,000.00'\n",
+      " '£6,100.00' '£4,200.00' '£4,750.00' '£4,800.00' '£2,700.00' '£27,600.00'\n",
+      " '£3,250.00' '£27,500.00' '£27,050.00' '£27,000.00' '£26,000.00'\n",
+      " '£25,600.00' '£25,475.00' '£21,600.00' '£11,900.00' '£25,300.00'\n",
+      " '£3,650.00' '£6,000.00' '£2,400.00' '£3,600.00' '£7,500.00' '£4,950.00'\n",
+      " '£21,000.00' '£16,000.00' '£22,000.00' '£7,750.00' '£24,000.00'\n",
+      " '£15,000.00' '£15,500.00' '£9,000.00' '£23,050.00' '£5,375.00' nan\n",
+      " '£6,250.00' '£5,000.00' '£2,100.00' '£14,000.00' '£6,200.00' '£9,950.00'\n",
+      " '£4,475.00' '£2,600.00' '£8,000.00' '£4,600.00' '£3,500.00' '£7,200.00'\n",
+      " '£8,800.00' '£3,175.00' '£2,800.00' '£13,000.00' '£1,000,000.00'\n",
+      " '£1,800.00' '£3,300.00' '£3,200.00' '£2,275.00' '£5,600.00' '£3,625.00'\n",
+      " '£4,375.00' '£24,750.00' '£24,500.00' '£3,900.00' '£13,750.00'\n",
+      " '£15,250.00' '£24,150.00' '£2,250.00' '£4,975.00' '£4,900.00'\n",
+      " '£23,975.00' '£23,750.00' '£23,600.00' '£23,575.00' '£5,400.00'\n",
+      " '£3,375.00' '£23,400.00' '£23,000.00' '£1,200.00' '£22,750.00'\n",
+      " '£22,500.00' '£22,400.00' '£22,250.00' '£7,400.00' '£21,700.00'\n",
+      " '£7,000.00' '£21,500.00' '£21,450.00' '£21,250.00' '£9,250.00'\n",
+      " '£20,900.00' '£20,500.00' '£20,400.00' '£20,375.00' '£20,050.00'\n",
+      " '£6,400.00' '£5,650.00' '£16,600.00' '£7,125.00' '£3,550.00' '£1,275.00'\n",
+      " '£3,800.00' '£1,625.00' '£8,500.00' '£7,575.00' '£5,200.00' '£4,025.00'\n",
+      " '£4,400.00' '£3,825.00' '£6,500.00' '£5,875.00' '£1,550.00' '£7,350.00'\n",
+      " '£6,700.00' '£8,300.00' '£10,625.00' '£19,900.00' '£19,800.00' '£500.00'\n",
+      " '£700.00' '£750.00' '£19,000.00' '£18,950.00' '£18,800.00' '£18,750.00'\n",
+      " '£18,725.00' '£18,550.00' '£7,100.00' '£18,500.00' '£18,400.00'\n",
+      " '£18,250.00' '£1,300.00' '£5,800.00' '£18,225.00' '£18,200.00'\n",
+      " '£1,375.00' '£17,950.00' '£17,800.00' '£17,750.00' '£17,700.00'\n",
+      " '£3,975.00' '£17,625.00' '£17,600.00' '£17,500.00' '£17,475.00'\n",
+      " '£17,400.00' '£17,200.00' '£17,000.00' '£16,950.00' '£16,875.00'\n",
+      " '£16,800.00' '£16,750.00' '£16,700.00' '£16,525.00' '£16,500.00'\n",
+      " '£11,500.00' '£16,425.00' '£16,400.00' '£16,300.00' '£16,250.00'\n",
+      " '£16,075.00' '£16,050.00' '£11,100.00' '£1,525.00' '£10,800.00'\n",
+      " '£7,850.00' '£11,325.00' '£14,500.00' '£5,975.00' '£1,075.00' '£1,100.00'\n",
+      " '£1,150.00' '£3,025.00' '£9,475.00' '£1,325.00' '£2,750.00' '£1,350.00'\n",
+      " '£3,725.00' '£1,925.00' '£5,175.00' '£6,300.00' '£8,400.00' '£1,450.00'\n",
+      " '£9,800.00' '£1,475.00' '£14,125.00' '£12,300.00' '£9,500.00' '£5,225.00'\n",
+      " '£12,200.00' '£10,750.00' '£1,675.00' '£1,700.00' '£8,875.00' '£5,150.00'\n",
+      " '£1,775.00' '£6,075.00' '£1,825.00' '£1,850.00' '£1,875.00' '£1,900.00'\n",
+      " '£1,950.00' '£11,000.00' '£14,950.00' '£14,900.00' '£7,600.00'\n",
+      " '£14,850.00' '£14,800.00' '£13,250.00' '£5,125.00' '£2,050.00'\n",
+      " '£2,125.00' '£2,150.00' '£3,075.00' '£2,200.00' '£2,225.00' '£2,300.00'\n",
+      " '£2,350.00' '£6,600.00' '£6,950.00' '£2,425.00' '£2,450.00' '£13,600.00'\n",
+      " '£13,500.00' '£9,200.00' '£13,475.00' '£13,450.00' '£13,400.00'\n",
+      " '£13,350.00' '£13,300.00' '£13,275.00' '£13,225.00' '£13,200.00'\n",
+      " '£13,100.00' '£13,050.00' '£12,250.00' '£7,550.00' '£11,200.00'\n",
+      " '£1,050.00' '£11,225.00' '£8,250.00' '£11,050.00' '£2,850.00' '£2,875.00'\n",
+      " '£2,900.00' '£2,925.00' '£2,975.00' '£12,500.00' '£10,150.00' '£8,325.00'\n",
+      " '£1,250.00' '£12,375.00' '£8,125.00' '£6,425.00' '£9,750.00' '£14,400.00'\n",
+      " '£5,100.00' '£10,950.00' '£6,800.00' '£9,450.00' '£22,550.00' '£6,900.00'\n",
+      " '£8,575.00' '£3,050.00' '£3,100.00' '£3,125.00' '£3,150.00' '£7,775.00'\n",
+      " '£13,650.00' '£2,950.00' '£12,800.00' '£800.00' '£3,325.00' '£3,350.00'\n",
+      " '£3,400.00' '£3,450.00' '£5,775.00' '£8,700.00' '£11,625.00' '£11,300.00'\n",
+      " '£5,250.00' '£7,275.00' '£14,775.00' '£5,300.00' '£6,725.00' '£3,525.00'\n",
+      " '£3,575.00' '£15,800.00' '£14,600.00' '£6,350.00' '£10,900.00'\n",
+      " '£10,875.00' '£12,400.00' '£10,775.00' '£10,700.00' '£10,600.00'\n",
+      " '£10,500.00' '£10,450.00' '£10,400.00' '£10,375.00' '£10,325.00'\n",
+      " '£10,300.00' '£10,250.00' '£10,200.00' '£3,700.00' '£3,750.00'\n",
+      " '£3,850.00' '£3,950.00' '£5,550.00' '£7,675.00' '£5,700.00' '£5,325.00'\n",
+      " '£9,875.00' '£4,350.00' '£4,450.00' '£4,300.00' '£10,850.00' '£8,100.00'\n",
+      " '£4,550.00' '£4,650.00' '£4,700.00' '£4,725.00' '£13,025.00' '£2,525.00'\n",
+      " '£15,450.00' '£6,625.00' '£17,050.00' '£7,975.00' '£9,700.00' '£8,200.00'\n",
+      " '£4,850.00' '£19,200.00' '£13,975.00' '£8,675.00' '£9,350.00' '£9,975.00'\n",
+      " '£9,100.00' '£9,900.00' '£14,750.00' '£7,050.00' '£5,750.00' '£15,075.00'\n",
+      " '£12,600.00' '£15,600.00' '£22,800.00' '£6,650.00' '£13,800.00'\n",
+      " '£8,475.00' '£18,900.00' '£14,300.00' '£8,975.00' '£8,950.00' '£8,900.00'\n",
+      " '£8,850.00' '£8,650.00' '£14,550.00' '£4,150.00' '£9,050.00' '£4,075.00'\n",
+      " '£14,650.00' '£8,450.00' '£9,125.00' '£4,325.00' '£5,950.00' '£9,925.00'\n",
+      " '£7,375.00' '£11,700.00' '£9,225.00' '£10,075.00' '£5,275.00'\n",
+      " '£23,500.00' '£8,600.00' '£5,425.00' '£5,450.00' '£12,725.00'\n",
+      " '£13,850.00' '£5,525.00' '£5,575.00' '£5,625.00' '£5,675.00' '£5,825.00'\n",
+      " '£5,850.00' '£5,900.00' '£5,925.00' '£2,550.00' '£15,750.00' '£19,500.00'\n",
+      " '£10,525.00' '£18,650.00' '£13,700.00' '£9,825.00' '£9,175.00'\n",
+      " '£7,075.00' '£7,025.00' '£11,400.00' '£8,375.00' '£6,025.00' '£6,150.00'\n",
+      " '£15,825.00' '£6,225.00' '£15,200.00' '£14,100.00' '£2,650.00'\n",
+      " '£6,975.00' '£6,325.00' '£6,375.00' '£19,750.00' '£2,625.00' '£6,550.00'\n",
+      " '£6,575.00' '£5,025.00' '£6,850.00' '£6,750.00' '£6,775.00' '£6,475.00'\n",
+      " '£6,450.00' '£6,825.00' '£6,875.00' '£6,925.00' '£8,525.00' '£3,775.00'\n",
+      " '£24,200.00' '£11,075.00' '£7,150.00' '£7,175.00' '£4,225.00' '£7,875.00'\n",
+      " '£21,825.00' '£7,250.00' '£7,300.00' '£19,125.00' '£7,325.00' '£7,475.00'\n",
+      " '£17,300.00' '£9,575.00' '£12,875.00' '£11,425.00' '£19,725.00' '£900.00'\n",
+      " '£17,450.00' '£14,075.00' '£12,275.00' '£31,300.00' '£7,525.00'\n",
+      " '£15,700.00' '£11,600.00' '£14,825.00' '£7,650.00' '£7,700.00'\n",
+      " '£7,900.00' '£7,925.00' '£7,950.00' '£13,375.00' '£25,850.00'\n",
+      " '£21,200.00' '£23,275.00' '£10,425.00' '£15,850.00' '£6,125.00'\n",
+      " '£5,075.00' '£5,050.00' '£12,900.00' '£9,525.00' '£29,800.00'\n",
+      " '£21,650.00' '£8,050.00' '£8,075.00' '£23,525.00' '£8,150.00' '£8,350.00'\n",
+      " '£27,250.00' '£2,475.00' '£8,550.00' '£8,625.00' '£8,725.00' '£8,750.00'\n",
+      " '£8,775.00' '£7,425.00' '£9,150.00' '£9,300.00' '£9,325.00' '£9,375.00'\n",
+      " '£9,400.00' '£9,425.00' '£9,550.00' '£29,000.00' '£12,150.00'\n",
+      " '£19,600.00' '£26,400.00' '£15,900.00' '£4,275.00' '£4,250.00'\n",
+      " '£13,950.00' '£7,450.00' '£4,125.00' '£4,100.00' '£4,050.00' '£11,875.00'\n",
+      " '£18,300.00' '£31,825.00' '£11,125.00' '£16,100.00' '£29,700.00'\n",
+      " '£6,675.00' '£15,350.00' '£10,675.00' '£10,025.00' '£10,100.00'\n",
+      " '£10,125.00' '£3,425.00' '£14,200.00' '£11,250.00' '£17,825.00'\n",
+      " '£11,525.00' '£11,550.00' '£11,575.00' '£11,650.00' '£11,750.00'\n",
+      " '£11,775.00' '£11,800.00' '£11,850.00' '£11,975.00' '£25,975.00'\n",
+      " '£14,625.00' '£8,825.00' '£27,525.00' '£19,075.00' '£14,700.00'\n",
+      " '£18,600.00' '£2,825.00' '£4,925.00' '£21,400.00' '£1,125.00'\n",
+      " '£20,675.00' '£16,200.00' '£12,475.00' '£18,150.00' '£12,100.00'\n",
+      " '£12,125.00' '£13,675.00' '£12,450.00' '£2,775.00' '£2,725.00'\n",
+      " '£2,675.00' '£4,175.00' '£12,950.00' '£12,700.00' '£12,750.00'\n",
+      " '£24,175.00' '£10,925.00' '£13,625.00' '£13,900.00' '£25,200.00'\n",
+      " '£12,975.00' '£14,350.00' '£3,275.00' '£14,275.00' '£20,600.00'\n",
+      " '£23,800.00' '£29,175.00' '£21,850.00' '£9,850.00' '£14,525.00'\n",
+      " '£14,575.00' '£27,300.00' '£12,075.00' '£17,325.00' '£9,625.00'\n",
+      " '£19,950.00' '£4,525.00' '£22,600.00' '£19,400.00' '£20,800.00'\n",
+      " '£15,125.00' '£12,225.00' '£15,400.00' '£18,325.00' '£15,550.00'\n",
+      " '£15,625.00' '£15,650.00' '£15,675.00' '£23,450.00' '£10,575.00'\n",
+      " '£19,425.00' '£19,550.00' '£19,650.00' '£2,375.00' '£3,500,000.00'\n",
+      " '£2,325.00' '£31,000.00' '£30,750.00' '£29,550.00' '£28,800.00'\n",
+      " '£14,725.00' '£22,200.00' '£24,625.00' '£23,850.00' '£23,475.00'\n",
+      " '£22,950.00' '£22,650.00' '£21,725.00' '£20,200.00' '£2,075.00'\n",
+      " '£5,725.00' '£19,975.00' '£19,850.00' '£19,775.00' '£725.00' '£950.00'\n",
+      " '£18,825.00' '£17,975.00' '£17,900.00' '£17,725.00' '£17,250.00'\n",
+      " '£16,775.00' '£16,450.00' '£14,975.00' '£13,575.00' '£13,425.00'\n",
+      " '£13,150.00' '£13,075.00' '£10,225.00' '£3,925.00' '£5,350.00'\n",
+      " '£10,725.00' '£10,550.00' '£10,275.00' '£3,675.00' '£12,775.00'\n",
+      " '£9,775.00' '£1,425.00' '£14,675.00' '£4,625.00' '£4,425.00' '£4,675.00'\n",
+      " '£12,650.00' '£4,875.00' '£1,225.00' '£17,350.00' '£9,275.00'\n",
+      " '£10,825.00' '£10,175.00' '£15,150.00' '£5,475.00' '£17,375.00'\n",
+      " '£10,650.00' '£8,275.00' '£15,025.00' '£9,725.00' '£6,525.00'\n",
+      " '£15,875.00' '£10,475.00' '£27,575.00' '£10,975.00' '£12,625.00'\n",
+      " '£8,025.00' '£7,225.00' '£10,050.00' '£4,775.00' '£20,475.00' '£7,725.00'\n",
+      " '£8,225.00' '£23,200.00' '£16,725.00' '£21,100.00' '£22,100.00'\n",
+      " '£7,625.00' '£25,500.00' '£20,150.00' '£18,050.00' '£23,700.00'\n",
+      " '£19,700.00' '£15,275.00' '£11,175.00' '£11,350.00' '£11,450.00'\n",
+      " '£11,475.00' '£19,150.00' '£19,450.00' '£9,075.00' '£21,125.00'\n",
+      " '£24,800.00' '£24,400.00' '£12,325.00' '£12,350.00' '£2,575.00'\n",
+      " '£12,025.00' '£14,150.00' '£17,875.00' '£11,025.00' '£14,475.00'\n",
+      " '£26,375.00' '£13,125.00' '£27,400.00' '£14,050.00' '£28,250.00'\n",
+      " '£15,975.00' '£33,250.00' '£6,275.00' '£22,350.00' '£24,100.00'\n",
+      " '£15,050.00' '£17,525.00' '£15,175.00' '£23,100.00' '£11,275.00'\n",
+      " '£13,175.00' '£19,925.00' '£32,400.00' '£30,600.00' '£31,400.00'\n",
+      " '£27,175.00' '£24,375.00' '£8,175.00' '£23,325.00' '£18,125.00'\n",
+      " '£3,225.00' '£26,800.00' '£17,925.00' '£14,250.00' '£12,925.00'\n",
+      " '£13,775.00' '£17,850.00' '£20,700.00' '£11,375.00' '£15,575.00'\n",
+      " '£15,775.00' '£19,275.00' '£29,850.00']\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.loan_amnt.unique())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "b34af57e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.887321Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.886745Z",
+     "iopub.status.idle": "2024-06-09T09:30:23.947425Z",
+     "shell.execute_reply": "2024-06-09T09:30:23.946157Z"
+    },
+    "papermill": {
+     "duration": 0.081239,
+     "end_time": "2024-06-09T09:30:23.950571",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.869332",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Cleaning the loan_amount variable \n",
+    "def handle_amount(value):\n",
+    "    value=str(value).split(\".\")[0]\n",
+    "    value=value.replace(\"£\",'')\n",
+    "    value=value.replace(',','')\n",
+    "    return float(value)\n",
+    "data['loan_amnt']=data['loan_amnt'].apply(handle_amount)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "13fea56b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:23.988785Z",
+     "iopub.status.busy": "2024-06-09T09:30:23.988368Z",
+     "iopub.status.idle": "2024-06-09T09:30:24.007300Z",
+     "shell.execute_reply": "2024-06-09T09:30:24.005988Z"
+    },
+    "papermill": {
+     "duration": 0.04409,
+     "end_time": "2024-06-09T09:30:24.010946",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:23.966856",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[3.5000e+04 1.0000e+03 5.5000e+03 2.5000e+03 1.6000e+03 4.5000e+03\n",
+      " 3.0000e+04 1.7500e+03 3.4800e+04 3.4000e+04 1.5000e+03 3.3950e+04\n",
+      " 3.3000e+04 4.5750e+03 1.4000e+03 3.2500e+04 4.0000e+03 2.0000e+03\n",
+      " 3.2000e+04 3.1050e+04 2.4250e+04 7.8000e+03 2.0000e+04 1.0000e+04\n",
+      " 2.5000e+04 1.8000e+04 1.2000e+04 2.9100e+04 2.8000e+04 9.6000e+03\n",
+      " 3.0000e+03 6.1000e+03 4.2000e+03 4.7500e+03 4.8000e+03 2.7000e+03\n",
+      " 2.7600e+04 3.2500e+03 2.7500e+04 2.7050e+04 2.7000e+04 2.6000e+04\n",
+      " 2.5600e+04 2.5475e+04 2.1600e+04 1.1900e+04 2.5300e+04 3.6500e+03\n",
+      " 6.0000e+03 2.4000e+03 3.6000e+03 7.5000e+03 4.9500e+03 2.1000e+04\n",
+      " 1.6000e+04 2.2000e+04 7.7500e+03 2.4000e+04 1.5000e+04 1.5500e+04\n",
+      " 9.0000e+03 2.3050e+04 5.3750e+03        nan 6.2500e+03 5.0000e+03\n",
+      " 2.1000e+03 1.4000e+04 6.2000e+03 9.9500e+03 4.4750e+03 2.6000e+03\n",
+      " 8.0000e+03 4.6000e+03 3.5000e+03 7.2000e+03 8.8000e+03 3.1750e+03\n",
+      " 2.8000e+03 1.3000e+04 1.0000e+06 1.8000e+03 3.3000e+03 3.2000e+03\n",
+      " 2.2750e+03 5.6000e+03 3.6250e+03 4.3750e+03 2.4750e+04 2.4500e+04\n",
+      " 3.9000e+03 1.3750e+04 1.5250e+04 2.4150e+04 2.2500e+03 4.9750e+03\n",
+      " 4.9000e+03 2.3975e+04 2.3750e+04 2.3600e+04 2.3575e+04 5.4000e+03\n",
+      " 3.3750e+03 2.3400e+04 2.3000e+04 1.2000e+03 2.2750e+04 2.2500e+04\n",
+      " 2.2400e+04 2.2250e+04 7.4000e+03 2.1700e+04 7.0000e+03 2.1500e+04\n",
+      " 2.1450e+04 2.1250e+04 9.2500e+03 2.0900e+04 2.0500e+04 2.0400e+04\n",
+      " 2.0375e+04 2.0050e+04 6.4000e+03 5.6500e+03 1.6600e+04 7.1250e+03\n",
+      " 3.5500e+03 1.2750e+03 3.8000e+03 1.6250e+03 8.5000e+03 7.5750e+03\n",
+      " 5.2000e+03 4.0250e+03 4.4000e+03 3.8250e+03 6.5000e+03 5.8750e+03\n",
+      " 1.5500e+03 7.3500e+03 6.7000e+03 8.3000e+03 1.0625e+04 1.9900e+04\n",
+      " 1.9800e+04 5.0000e+02 7.0000e+02 7.5000e+02 1.9000e+04 1.8950e+04\n",
+      " 1.8800e+04 1.8750e+04 1.8725e+04 1.8550e+04 7.1000e+03 1.8500e+04\n",
+      " 1.8400e+04 1.8250e+04 1.3000e+03 5.8000e+03 1.8225e+04 1.8200e+04\n",
+      " 1.3750e+03 1.7950e+04 1.7800e+04 1.7750e+04 1.7700e+04 3.9750e+03\n",
+      " 1.7625e+04 1.7600e+04 1.7500e+04 1.7475e+04 1.7400e+04 1.7200e+04\n",
+      " 1.7000e+04 1.6950e+04 1.6875e+04 1.6800e+04 1.6750e+04 1.6700e+04\n",
+      " 1.6525e+04 1.6500e+04 1.1500e+04 1.6425e+04 1.6400e+04 1.6300e+04\n",
+      " 1.6250e+04 1.6075e+04 1.6050e+04 1.1100e+04 1.5250e+03 1.0800e+04\n",
+      " 7.8500e+03 1.1325e+04 1.4500e+04 5.9750e+03 1.0750e+03 1.1000e+03\n",
+      " 1.1500e+03 3.0250e+03 9.4750e+03 1.3250e+03 2.7500e+03 1.3500e+03\n",
+      " 3.7250e+03 1.9250e+03 5.1750e+03 6.3000e+03 8.4000e+03 1.4500e+03\n",
+      " 9.8000e+03 1.4750e+03 1.4125e+04 1.2300e+04 9.5000e+03 5.2250e+03\n",
+      " 1.2200e+04 1.0750e+04 1.6750e+03 1.7000e+03 8.8750e+03 5.1500e+03\n",
+      " 1.7750e+03 6.0750e+03 1.8250e+03 1.8500e+03 1.8750e+03 1.9000e+03\n",
+      " 1.9500e+03 1.1000e+04 1.4950e+04 1.4900e+04 7.6000e+03 1.4850e+04\n",
+      " 1.4800e+04 1.3250e+04 5.1250e+03 2.0500e+03 2.1250e+03 2.1500e+03\n",
+      " 3.0750e+03 2.2000e+03 2.2250e+03 2.3000e+03 2.3500e+03 6.6000e+03\n",
+      " 6.9500e+03 2.4250e+03 2.4500e+03 1.3600e+04 1.3500e+04 9.2000e+03\n",
+      " 1.3475e+04 1.3450e+04 1.3400e+04 1.3350e+04 1.3300e+04 1.3275e+04\n",
+      " 1.3225e+04 1.3200e+04 1.3100e+04 1.3050e+04 1.2250e+04 7.5500e+03\n",
+      " 1.1200e+04 1.0500e+03 1.1225e+04 8.2500e+03 1.1050e+04 2.8500e+03\n",
+      " 2.8750e+03 2.9000e+03 2.9250e+03 2.9750e+03 1.2500e+04 1.0150e+04\n",
+      " 8.3250e+03 1.2500e+03 1.2375e+04 8.1250e+03 6.4250e+03 9.7500e+03\n",
+      " 1.4400e+04 5.1000e+03 1.0950e+04 6.8000e+03 9.4500e+03 2.2550e+04\n",
+      " 6.9000e+03 8.5750e+03 3.0500e+03 3.1000e+03 3.1250e+03 3.1500e+03\n",
+      " 7.7750e+03 1.3650e+04 2.9500e+03 1.2800e+04 8.0000e+02 3.3250e+03\n",
+      " 3.3500e+03 3.4000e+03 3.4500e+03 5.7750e+03 8.7000e+03 1.1625e+04\n",
+      " 1.1300e+04 5.2500e+03 7.2750e+03 1.4775e+04 5.3000e+03 6.7250e+03\n",
+      " 3.5250e+03 3.5750e+03 1.5800e+04 1.4600e+04 6.3500e+03 1.0900e+04\n",
+      " 1.0875e+04 1.2400e+04 1.0775e+04 1.0700e+04 1.0600e+04 1.0500e+04\n",
+      " 1.0450e+04 1.0400e+04 1.0375e+04 1.0325e+04 1.0300e+04 1.0250e+04\n",
+      " 1.0200e+04 3.7000e+03 3.7500e+03 3.8500e+03 3.9500e+03 5.5500e+03\n",
+      " 7.6750e+03 5.7000e+03 5.3250e+03 9.8750e+03 4.3500e+03 4.4500e+03\n",
+      " 4.3000e+03 1.0850e+04 8.1000e+03 4.5500e+03 4.6500e+03 4.7000e+03\n",
+      " 4.7250e+03 1.3025e+04 2.5250e+03 1.5450e+04 6.6250e+03 1.7050e+04\n",
+      " 7.9750e+03 9.7000e+03 8.2000e+03 4.8500e+03 1.9200e+04 1.3975e+04\n",
+      " 8.6750e+03 9.3500e+03 9.9750e+03 9.1000e+03 9.9000e+03 1.4750e+04\n",
+      " 7.0500e+03 5.7500e+03 1.5075e+04 1.2600e+04 1.5600e+04 2.2800e+04\n",
+      " 6.6500e+03 1.3800e+04 8.4750e+03 1.8900e+04 1.4300e+04 8.9750e+03\n",
+      " 8.9500e+03 8.9000e+03 8.8500e+03 8.6500e+03 1.4550e+04 4.1500e+03\n",
+      " 9.0500e+03 4.0750e+03 1.4650e+04 8.4500e+03 9.1250e+03 4.3250e+03\n",
+      " 5.9500e+03 9.9250e+03 7.3750e+03 1.1700e+04 9.2250e+03 1.0075e+04\n",
+      " 5.2750e+03 2.3500e+04 8.6000e+03 5.4250e+03 5.4500e+03 1.2725e+04\n",
+      " 1.3850e+04 5.5250e+03 5.5750e+03 5.6250e+03 5.6750e+03 5.8250e+03\n",
+      " 5.8500e+03 5.9000e+03 5.9250e+03 2.5500e+03 1.5750e+04 1.9500e+04\n",
+      " 1.0525e+04 1.8650e+04 1.3700e+04 9.8250e+03 9.1750e+03 7.0750e+03\n",
+      " 7.0250e+03 1.1400e+04 8.3750e+03 6.0250e+03 6.1500e+03 1.5825e+04\n",
+      " 6.2250e+03 1.5200e+04 1.4100e+04 2.6500e+03 6.9750e+03 6.3250e+03\n",
+      " 6.3750e+03 1.9750e+04 2.6250e+03 6.5500e+03 6.5750e+03 5.0250e+03\n",
+      " 6.8500e+03 6.7500e+03 6.7750e+03 6.4750e+03 6.4500e+03 6.8250e+03\n",
+      " 6.8750e+03 6.9250e+03 8.5250e+03 3.7750e+03 2.4200e+04 1.1075e+04\n",
+      " 7.1500e+03 7.1750e+03 4.2250e+03 7.8750e+03 2.1825e+04 7.2500e+03\n",
+      " 7.3000e+03 1.9125e+04 7.3250e+03 7.4750e+03 1.7300e+04 9.5750e+03\n",
+      " 1.2875e+04 1.1425e+04 1.9725e+04 9.0000e+02 1.7450e+04 1.4075e+04\n",
+      " 1.2275e+04 3.1300e+04 7.5250e+03 1.5700e+04 1.1600e+04 1.4825e+04\n",
+      " 7.6500e+03 7.7000e+03 7.9000e+03 7.9250e+03 7.9500e+03 1.3375e+04\n",
+      " 2.5850e+04 2.1200e+04 2.3275e+04 1.0425e+04 1.5850e+04 6.1250e+03\n",
+      " 5.0750e+03 5.0500e+03 1.2900e+04 9.5250e+03 2.9800e+04 2.1650e+04\n",
+      " 8.0500e+03 8.0750e+03 2.3525e+04 8.1500e+03 8.3500e+03 2.7250e+04\n",
+      " 2.4750e+03 8.5500e+03 8.6250e+03 8.7250e+03 8.7500e+03 8.7750e+03\n",
+      " 7.4250e+03 9.1500e+03 9.3000e+03 9.3250e+03 9.3750e+03 9.4000e+03\n",
+      " 9.4250e+03 9.5500e+03 2.9000e+04 1.2150e+04 1.9600e+04 2.6400e+04\n",
+      " 1.5900e+04 4.2750e+03 4.2500e+03 1.3950e+04 7.4500e+03 4.1250e+03\n",
+      " 4.1000e+03 4.0500e+03 1.1875e+04 1.8300e+04 3.1825e+04 1.1125e+04\n",
+      " 1.6100e+04 2.9700e+04 6.6750e+03 1.5350e+04 1.0675e+04 1.0025e+04\n",
+      " 1.0100e+04 1.0125e+04 3.4250e+03 1.4200e+04 1.1250e+04 1.7825e+04\n",
+      " 1.1525e+04 1.1550e+04 1.1575e+04 1.1650e+04 1.1750e+04 1.1775e+04\n",
+      " 1.1800e+04 1.1850e+04 1.1975e+04 2.5975e+04 1.4625e+04 8.8250e+03\n",
+      " 2.7525e+04 1.9075e+04 1.4700e+04 1.8600e+04 2.8250e+03 4.9250e+03\n",
+      " 2.1400e+04 1.1250e+03 2.0675e+04 1.6200e+04 1.2475e+04 1.8150e+04\n",
+      " 1.2100e+04 1.2125e+04 1.3675e+04 1.2450e+04 2.7750e+03 2.7250e+03\n",
+      " 2.6750e+03 4.1750e+03 1.2950e+04 1.2700e+04 1.2750e+04 2.4175e+04\n",
+      " 1.0925e+04 1.3625e+04 1.3900e+04 2.5200e+04 1.2975e+04 1.4350e+04\n",
+      " 3.2750e+03 1.4275e+04 2.0600e+04 2.3800e+04 2.9175e+04 2.1850e+04\n",
+      " 9.8500e+03 1.4525e+04 1.4575e+04 2.7300e+04 1.2075e+04 1.7325e+04\n",
+      " 9.6250e+03 1.9950e+04 4.5250e+03 2.2600e+04 1.9400e+04 2.0800e+04\n",
+      " 1.5125e+04 1.2225e+04 1.5400e+04 1.8325e+04 1.5550e+04 1.5625e+04\n",
+      " 1.5650e+04 1.5675e+04 2.3450e+04 1.0575e+04 1.9425e+04 1.9550e+04\n",
+      " 1.9650e+04 2.3750e+03 3.5000e+06 2.3250e+03 3.1000e+04 3.0750e+04\n",
+      " 2.9550e+04 2.8800e+04 1.4725e+04 2.2200e+04 2.4625e+04 2.3850e+04\n",
+      " 2.3475e+04 2.2950e+04 2.2650e+04 2.1725e+04 2.0200e+04 2.0750e+03\n",
+      " 5.7250e+03 1.9975e+04 1.9850e+04 1.9775e+04 7.2500e+02 9.5000e+02\n",
+      " 1.8825e+04 1.7975e+04 1.7900e+04 1.7725e+04 1.7250e+04 1.6775e+04\n",
+      " 1.6450e+04 1.4975e+04 1.3575e+04 1.3425e+04 1.3150e+04 1.3075e+04\n",
+      " 1.0225e+04 3.9250e+03 5.3500e+03 1.0725e+04 1.0550e+04 1.0275e+04\n",
+      " 3.6750e+03 1.2775e+04 9.7750e+03 1.4250e+03 1.4675e+04 4.6250e+03\n",
+      " 4.4250e+03 4.6750e+03 1.2650e+04 4.8750e+03 1.2250e+03 1.7350e+04\n",
+      " 9.2750e+03 1.0825e+04 1.0175e+04 1.5150e+04 5.4750e+03 1.7375e+04\n",
+      " 1.0650e+04 8.2750e+03 1.5025e+04 9.7250e+03 6.5250e+03 1.5875e+04\n",
+      " 1.0475e+04 2.7575e+04 1.0975e+04 1.2625e+04 8.0250e+03 7.2250e+03\n",
+      " 1.0050e+04 4.7750e+03 2.0475e+04 7.7250e+03 8.2250e+03 2.3200e+04\n",
+      " 1.6725e+04 2.1100e+04 2.2100e+04 7.6250e+03 2.5500e+04 2.0150e+04\n",
+      " 1.8050e+04 2.3700e+04 1.9700e+04 1.5275e+04 1.1175e+04 1.1350e+04\n",
+      " 1.1450e+04 1.1475e+04 1.9150e+04 1.9450e+04 9.0750e+03 2.1125e+04\n",
+      " 2.4800e+04 2.4400e+04 1.2325e+04 1.2350e+04 2.5750e+03 1.2025e+04\n",
+      " 1.4150e+04 1.7875e+04 1.1025e+04 1.4475e+04 2.6375e+04 1.3125e+04\n",
+      " 2.7400e+04 1.4050e+04 2.8250e+04 1.5975e+04 3.3250e+04 6.2750e+03\n",
+      " 2.2350e+04 2.4100e+04 1.5050e+04 1.7525e+04 1.5175e+04 2.3100e+04\n",
+      " 1.1275e+04 1.3175e+04 1.9925e+04 3.2400e+04 3.0600e+04 3.1400e+04\n",
+      " 2.7175e+04 2.4375e+04 8.1750e+03 2.3325e+04 1.8125e+04 3.2250e+03\n",
+      " 2.6800e+04 1.7925e+04 1.4250e+04 1.2925e+04 1.3775e+04 1.7850e+04\n",
+      " 2.0700e+04 1.1375e+04 1.5575e+04 1.5775e+04 1.9275e+04 2.9850e+04]\n",
+      "0    35000.0\n",
+      "1     1000.0\n",
+      "2     5500.0\n",
+      "3    35000.0\n",
+      "4    35000.0\n",
+      "Name: loan_amnt, dtype: float64\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.loan_amnt.unique())\n",
+    "print(data.loan_amnt.head())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "e7c0a5d2",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:24.047266Z",
+     "iopub.status.busy": "2024-06-09T09:30:24.045982Z",
+     "iopub.status.idle": "2024-06-09T09:30:24.080003Z",
+     "shell.execute_reply": "2024-06-09T09:30:24.078827Z"
+    },
+    "papermill": {
+     "duration": 0.055253,
+     "end_time": "2024-06-09T09:30:24.082890",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:24.027637",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "#Handling the missing value \n",
+    "def handle_amount(value):\n",
+    "    if str(value)=='nan':\n",
+    "        return float(data.loan_amnt.mean())\n",
+    "    else:\n",
+    "        return value\n",
+    "\n",
+    "data['loan_amnt']=data['loan_amnt'].apply(handle_amount)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "id": "61fb4a15",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:24.180796Z",
+     "iopub.status.busy": "2024-06-09T09:30:24.179379Z",
+     "iopub.status.idle": "2024-06-09T09:30:24.214743Z",
+     "shell.execute_reply": "2024-06-09T09:30:24.212002Z"
+    },
+    "papermill": {
+     "duration": 0.057859,
+     "end_time": "2024-06-09T09:30:24.219691",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:24.161832",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[3.50000000e+04 1.00000000e+03 5.50000000e+03 2.50000000e+03\n",
+      " 1.60000000e+03 4.50000000e+03 3.00000000e+04 1.75000000e+03\n",
+      " 3.48000000e+04 3.40000000e+04 1.50000000e+03 3.39500000e+04\n",
+      " 3.30000000e+04 4.57500000e+03 1.40000000e+03 3.25000000e+04\n",
+      " 4.00000000e+03 2.00000000e+03 3.20000000e+04 3.10500000e+04\n",
+      " 2.42500000e+04 7.80000000e+03 2.00000000e+04 1.00000000e+04\n",
+      " 2.50000000e+04 1.80000000e+04 1.20000000e+04 2.91000000e+04\n",
+      " 2.80000000e+04 9.60000000e+03 3.00000000e+03 6.10000000e+03\n",
+      " 4.20000000e+03 4.75000000e+03 4.80000000e+03 2.70000000e+03\n",
+      " 2.76000000e+04 3.25000000e+03 2.75000000e+04 2.70500000e+04\n",
+      " 2.70000000e+04 2.60000000e+04 2.56000000e+04 2.54750000e+04\n",
+      " 2.16000000e+04 1.19000000e+04 2.53000000e+04 3.65000000e+03\n",
+      " 6.00000000e+03 2.40000000e+03 3.60000000e+03 7.50000000e+03\n",
+      " 4.95000000e+03 2.10000000e+04 1.60000000e+04 2.20000000e+04\n",
+      " 7.75000000e+03 2.40000000e+04 1.50000000e+04 1.55000000e+04\n",
+      " 9.00000000e+03 2.30500000e+04 5.37500000e+03 9.75624674e+03\n",
+      " 6.25000000e+03 5.00000000e+03 2.10000000e+03 1.40000000e+04\n",
+      " 6.20000000e+03 9.95000000e+03 4.47500000e+03 2.60000000e+03\n",
+      " 8.00000000e+03 4.60000000e+03 3.50000000e+03 7.20000000e+03\n",
+      " 8.80000000e+03 3.17500000e+03 2.80000000e+03 1.30000000e+04\n",
+      " 1.00000000e+06 1.80000000e+03 3.30000000e+03 3.20000000e+03\n",
+      " 2.27500000e+03 5.60000000e+03 3.62500000e+03 4.37500000e+03\n",
+      " 2.47500000e+04 2.45000000e+04 3.90000000e+03 1.37500000e+04\n",
+      " 1.52500000e+04 2.41500000e+04 2.25000000e+03 4.97500000e+03\n",
+      " 4.90000000e+03 2.39750000e+04 2.37500000e+04 2.36000000e+04\n",
+      " 2.35750000e+04 5.40000000e+03 3.37500000e+03 2.34000000e+04\n",
+      " 2.30000000e+04 1.20000000e+03 2.27500000e+04 2.25000000e+04\n",
+      " 2.24000000e+04 2.22500000e+04 7.40000000e+03 2.17000000e+04\n",
+      " 7.00000000e+03 2.15000000e+04 2.14500000e+04 2.12500000e+04\n",
+      " 9.25000000e+03 2.09000000e+04 2.05000000e+04 2.04000000e+04\n",
+      " 2.03750000e+04 2.00500000e+04 6.40000000e+03 5.65000000e+03\n",
+      " 1.66000000e+04 7.12500000e+03 3.55000000e+03 1.27500000e+03\n",
+      " 3.80000000e+03 1.62500000e+03 8.50000000e+03 7.57500000e+03\n",
+      " 5.20000000e+03 4.02500000e+03 4.40000000e+03 3.82500000e+03\n",
+      " 6.50000000e+03 5.87500000e+03 1.55000000e+03 7.35000000e+03\n",
+      " 6.70000000e+03 8.30000000e+03 1.06250000e+04 1.99000000e+04\n",
+      " 1.98000000e+04 5.00000000e+02 7.00000000e+02 7.50000000e+02\n",
+      " 1.90000000e+04 1.89500000e+04 1.88000000e+04 1.87500000e+04\n",
+      " 1.87250000e+04 1.85500000e+04 7.10000000e+03 1.85000000e+04\n",
+      " 1.84000000e+04 1.82500000e+04 1.30000000e+03 5.80000000e+03\n",
+      " 1.82250000e+04 1.82000000e+04 1.37500000e+03 1.79500000e+04\n",
+      " 1.78000000e+04 1.77500000e+04 1.77000000e+04 3.97500000e+03\n",
+      " 1.76250000e+04 1.76000000e+04 1.75000000e+04 1.74750000e+04\n",
+      " 1.74000000e+04 1.72000000e+04 1.70000000e+04 1.69500000e+04\n",
+      " 1.68750000e+04 1.68000000e+04 1.67500000e+04 1.67000000e+04\n",
+      " 1.65250000e+04 1.65000000e+04 1.15000000e+04 1.64250000e+04\n",
+      " 1.64000000e+04 1.63000000e+04 1.62500000e+04 1.60750000e+04\n",
+      " 1.60500000e+04 1.11000000e+04 1.52500000e+03 1.08000000e+04\n",
+      " 7.85000000e+03 1.13250000e+04 1.45000000e+04 5.97500000e+03\n",
+      " 1.07500000e+03 1.10000000e+03 1.15000000e+03 3.02500000e+03\n",
+      " 9.47500000e+03 1.32500000e+03 2.75000000e+03 1.35000000e+03\n",
+      " 3.72500000e+03 1.92500000e+03 5.17500000e+03 6.30000000e+03\n",
+      " 8.40000000e+03 1.45000000e+03 9.80000000e+03 1.47500000e+03\n",
+      " 1.41250000e+04 1.23000000e+04 9.50000000e+03 5.22500000e+03\n",
+      " 1.22000000e+04 1.07500000e+04 1.67500000e+03 1.70000000e+03\n",
+      " 8.87500000e+03 5.15000000e+03 1.77500000e+03 6.07500000e+03\n",
+      " 1.82500000e+03 1.85000000e+03 1.87500000e+03 1.90000000e+03\n",
+      " 1.95000000e+03 1.10000000e+04 1.49500000e+04 1.49000000e+04\n",
+      " 7.60000000e+03 1.48500000e+04 1.48000000e+04 1.32500000e+04\n",
+      " 5.12500000e+03 2.05000000e+03 2.12500000e+03 2.15000000e+03\n",
+      " 3.07500000e+03 2.20000000e+03 2.22500000e+03 2.30000000e+03\n",
+      " 2.35000000e+03 6.60000000e+03 6.95000000e+03 2.42500000e+03\n",
+      " 2.45000000e+03 1.36000000e+04 1.35000000e+04 9.20000000e+03\n",
+      " 1.34750000e+04 1.34500000e+04 1.34000000e+04 1.33500000e+04\n",
+      " 1.33000000e+04 1.32750000e+04 1.32250000e+04 1.32000000e+04\n",
+      " 1.31000000e+04 1.30500000e+04 1.22500000e+04 7.55000000e+03\n",
+      " 1.12000000e+04 1.05000000e+03 1.12250000e+04 8.25000000e+03\n",
+      " 1.10500000e+04 2.85000000e+03 2.87500000e+03 2.90000000e+03\n",
+      " 2.92500000e+03 2.97500000e+03 1.25000000e+04 1.01500000e+04\n",
+      " 8.32500000e+03 1.25000000e+03 1.23750000e+04 8.12500000e+03\n",
+      " 6.42500000e+03 9.75000000e+03 1.44000000e+04 5.10000000e+03\n",
+      " 1.09500000e+04 6.80000000e+03 9.45000000e+03 2.25500000e+04\n",
+      " 6.90000000e+03 8.57500000e+03 3.05000000e+03 3.10000000e+03\n",
+      " 3.12500000e+03 3.15000000e+03 7.77500000e+03 1.36500000e+04\n",
+      " 2.95000000e+03 1.28000000e+04 8.00000000e+02 3.32500000e+03\n",
+      " 3.35000000e+03 3.40000000e+03 3.45000000e+03 5.77500000e+03\n",
+      " 8.70000000e+03 1.16250000e+04 1.13000000e+04 5.25000000e+03\n",
+      " 7.27500000e+03 1.47750000e+04 5.30000000e+03 6.72500000e+03\n",
+      " 3.52500000e+03 3.57500000e+03 1.58000000e+04 1.46000000e+04\n",
+      " 6.35000000e+03 1.09000000e+04 1.08750000e+04 1.24000000e+04\n",
+      " 1.07750000e+04 1.07000000e+04 1.06000000e+04 1.05000000e+04\n",
+      " 1.04500000e+04 1.04000000e+04 1.03750000e+04 1.03250000e+04\n",
+      " 1.03000000e+04 1.02500000e+04 1.02000000e+04 3.70000000e+03\n",
+      " 3.75000000e+03 3.85000000e+03 3.95000000e+03 5.55000000e+03\n",
+      " 7.67500000e+03 5.70000000e+03 5.32500000e+03 9.87500000e+03\n",
+      " 4.35000000e+03 4.45000000e+03 4.30000000e+03 1.08500000e+04\n",
+      " 8.10000000e+03 4.55000000e+03 4.65000000e+03 4.70000000e+03\n",
+      " 4.72500000e+03 1.30250000e+04 2.52500000e+03 1.54500000e+04\n",
+      " 6.62500000e+03 1.70500000e+04 7.97500000e+03 9.70000000e+03\n",
+      " 8.20000000e+03 4.85000000e+03 1.92000000e+04 1.39750000e+04\n",
+      " 8.67500000e+03 9.35000000e+03 9.97500000e+03 9.10000000e+03\n",
+      " 9.90000000e+03 1.47500000e+04 7.05000000e+03 5.75000000e+03\n",
+      " 1.50750000e+04 1.26000000e+04 1.56000000e+04 2.28000000e+04\n",
+      " 6.65000000e+03 1.38000000e+04 8.47500000e+03 1.89000000e+04\n",
+      " 1.43000000e+04 8.97500000e+03 8.95000000e+03 8.90000000e+03\n",
+      " 8.85000000e+03 8.65000000e+03 1.45500000e+04 4.15000000e+03\n",
+      " 9.05000000e+03 4.07500000e+03 1.46500000e+04 8.45000000e+03\n",
+      " 9.12500000e+03 4.32500000e+03 5.95000000e+03 9.92500000e+03\n",
+      " 7.37500000e+03 1.17000000e+04 9.22500000e+03 1.00750000e+04\n",
+      " 5.27500000e+03 2.35000000e+04 8.60000000e+03 5.42500000e+03\n",
+      " 5.45000000e+03 1.27250000e+04 1.38500000e+04 5.52500000e+03\n",
+      " 5.57500000e+03 5.62500000e+03 5.67500000e+03 5.82500000e+03\n",
+      " 5.85000000e+03 5.90000000e+03 5.92500000e+03 2.55000000e+03\n",
+      " 1.57500000e+04 1.95000000e+04 1.05250000e+04 1.86500000e+04\n",
+      " 1.37000000e+04 9.82500000e+03 9.17500000e+03 7.07500000e+03\n",
+      " 7.02500000e+03 1.14000000e+04 8.37500000e+03 6.02500000e+03\n",
+      " 6.15000000e+03 1.58250000e+04 6.22500000e+03 1.52000000e+04\n",
+      " 1.41000000e+04 2.65000000e+03 6.97500000e+03 6.32500000e+03\n",
+      " 6.37500000e+03 1.97500000e+04 2.62500000e+03 6.55000000e+03\n",
+      " 6.57500000e+03 5.02500000e+03 6.85000000e+03 6.75000000e+03\n",
+      " 6.77500000e+03 6.47500000e+03 6.45000000e+03 6.82500000e+03\n",
+      " 6.87500000e+03 6.92500000e+03 8.52500000e+03 3.77500000e+03\n",
+      " 2.42000000e+04 1.10750000e+04 7.15000000e+03 7.17500000e+03\n",
+      " 4.22500000e+03 7.87500000e+03 2.18250000e+04 7.25000000e+03\n",
+      " 7.30000000e+03 1.91250000e+04 7.32500000e+03 7.47500000e+03\n",
+      " 1.73000000e+04 9.57500000e+03 1.28750000e+04 1.14250000e+04\n",
+      " 1.97250000e+04 9.00000000e+02 1.74500000e+04 1.40750000e+04\n",
+      " 1.22750000e+04 3.13000000e+04 7.52500000e+03 1.57000000e+04\n",
+      " 1.16000000e+04 1.48250000e+04 7.65000000e+03 7.70000000e+03\n",
+      " 7.90000000e+03 7.92500000e+03 7.95000000e+03 1.33750000e+04\n",
+      " 2.58500000e+04 2.12000000e+04 2.32750000e+04 1.04250000e+04\n",
+      " 1.58500000e+04 6.12500000e+03 5.07500000e+03 5.05000000e+03\n",
+      " 1.29000000e+04 9.52500000e+03 2.98000000e+04 2.16500000e+04\n",
+      " 8.05000000e+03 8.07500000e+03 2.35250000e+04 8.15000000e+03\n",
+      " 8.35000000e+03 2.72500000e+04 2.47500000e+03 8.55000000e+03\n",
+      " 8.62500000e+03 8.72500000e+03 8.75000000e+03 8.77500000e+03\n",
+      " 7.42500000e+03 9.15000000e+03 9.30000000e+03 9.32500000e+03\n",
+      " 9.37500000e+03 9.40000000e+03 9.42500000e+03 9.55000000e+03\n",
+      " 2.90000000e+04 1.21500000e+04 1.96000000e+04 2.64000000e+04\n",
+      " 1.59000000e+04 4.27500000e+03 4.25000000e+03 1.39500000e+04\n",
+      " 7.45000000e+03 4.12500000e+03 4.10000000e+03 4.05000000e+03\n",
+      " 1.18750000e+04 1.83000000e+04 3.18250000e+04 1.11250000e+04\n",
+      " 1.61000000e+04 2.97000000e+04 6.67500000e+03 1.53500000e+04\n",
+      " 1.06750000e+04 1.00250000e+04 1.01000000e+04 1.01250000e+04\n",
+      " 3.42500000e+03 1.42000000e+04 1.12500000e+04 1.78250000e+04\n",
+      " 1.15250000e+04 1.15500000e+04 1.15750000e+04 1.16500000e+04\n",
+      " 1.17500000e+04 1.17750000e+04 1.18000000e+04 1.18500000e+04\n",
+      " 1.19750000e+04 2.59750000e+04 1.46250000e+04 8.82500000e+03\n",
+      " 2.75250000e+04 1.90750000e+04 1.47000000e+04 1.86000000e+04\n",
+      " 2.82500000e+03 4.92500000e+03 2.14000000e+04 1.12500000e+03\n",
+      " 2.06750000e+04 1.62000000e+04 1.24750000e+04 1.81500000e+04\n",
+      " 1.21000000e+04 1.21250000e+04 1.36750000e+04 1.24500000e+04\n",
+      " 2.77500000e+03 2.72500000e+03 2.67500000e+03 4.17500000e+03\n",
+      " 1.29500000e+04 1.27000000e+04 1.27500000e+04 2.41750000e+04\n",
+      " 1.09250000e+04 1.36250000e+04 1.39000000e+04 2.52000000e+04\n",
+      " 1.29750000e+04 1.43500000e+04 3.27500000e+03 1.42750000e+04\n",
+      " 2.06000000e+04 2.38000000e+04 2.91750000e+04 2.18500000e+04\n",
+      " 9.85000000e+03 1.45250000e+04 1.45750000e+04 2.73000000e+04\n",
+      " 1.20750000e+04 1.73250000e+04 9.62500000e+03 1.99500000e+04\n",
+      " 4.52500000e+03 2.26000000e+04 1.94000000e+04 2.08000000e+04\n",
+      " 1.51250000e+04 1.22250000e+04 1.54000000e+04 1.83250000e+04\n",
+      " 1.55500000e+04 1.56250000e+04 1.56500000e+04 1.56750000e+04\n",
+      " 2.34500000e+04 1.05750000e+04 1.94250000e+04 1.95500000e+04\n",
+      " 1.96500000e+04 2.37500000e+03 3.50000000e+06 2.32500000e+03\n",
+      " 3.10000000e+04 3.07500000e+04 2.95500000e+04 2.88000000e+04\n",
+      " 1.47250000e+04 2.22000000e+04 2.46250000e+04 2.38500000e+04\n",
+      " 2.34750000e+04 2.29500000e+04 2.26500000e+04 2.17250000e+04\n",
+      " 2.02000000e+04 2.07500000e+03 5.72500000e+03 1.99750000e+04\n",
+      " 1.98500000e+04 1.97750000e+04 7.25000000e+02 9.50000000e+02\n",
+      " 1.88250000e+04 1.79750000e+04 1.79000000e+04 1.77250000e+04\n",
+      " 1.72500000e+04 1.67750000e+04 1.64500000e+04 1.49750000e+04\n",
+      " 1.35750000e+04 1.34250000e+04 1.31500000e+04 1.30750000e+04\n",
+      " 1.02250000e+04 3.92500000e+03 5.35000000e+03 1.07250000e+04\n",
+      " 1.05500000e+04 1.02750000e+04 3.67500000e+03 1.27750000e+04\n",
+      " 9.77500000e+03 1.42500000e+03 1.46750000e+04 4.62500000e+03\n",
+      " 4.42500000e+03 4.67500000e+03 1.26500000e+04 4.87500000e+03\n",
+      " 1.22500000e+03 1.73500000e+04 9.27500000e+03 1.08250000e+04\n",
+      " 1.01750000e+04 1.51500000e+04 5.47500000e+03 1.73750000e+04\n",
+      " 1.06500000e+04 8.27500000e+03 1.50250000e+04 9.72500000e+03\n",
+      " 6.52500000e+03 1.58750000e+04 1.04750000e+04 2.75750000e+04\n",
+      " 1.09750000e+04 1.26250000e+04 8.02500000e+03 7.22500000e+03\n",
+      " 1.00500000e+04 4.77500000e+03 2.04750000e+04 7.72500000e+03\n",
+      " 8.22500000e+03 2.32000000e+04 1.67250000e+04 2.11000000e+04\n",
+      " 2.21000000e+04 7.62500000e+03 2.55000000e+04 2.01500000e+04\n",
+      " 1.80500000e+04 2.37000000e+04 1.97000000e+04 1.52750000e+04\n",
+      " 1.11750000e+04 1.13500000e+04 1.14500000e+04 1.14750000e+04\n",
+      " 1.91500000e+04 1.94500000e+04 9.07500000e+03 2.11250000e+04\n",
+      " 2.48000000e+04 2.44000000e+04 1.23250000e+04 1.23500000e+04\n",
+      " 2.57500000e+03 1.20250000e+04 1.41500000e+04 1.78750000e+04\n",
+      " 1.10250000e+04 1.44750000e+04 2.63750000e+04 1.31250000e+04\n",
+      " 2.74000000e+04 1.40500000e+04 2.82500000e+04 1.59750000e+04\n",
+      " 3.32500000e+04 6.27500000e+03 2.23500000e+04 2.41000000e+04\n",
+      " 1.50500000e+04 1.75250000e+04 1.51750000e+04 2.31000000e+04\n",
+      " 1.12750000e+04 1.31750000e+04 1.99250000e+04 3.24000000e+04\n",
+      " 3.06000000e+04 3.14000000e+04 2.71750000e+04 2.43750000e+04\n",
+      " 8.17500000e+03 2.33250000e+04 1.81250000e+04 3.22500000e+03\n",
+      " 2.68000000e+04 1.79250000e+04 1.42500000e+04 1.29250000e+04\n",
+      " 1.37750000e+04 1.78500000e+04 2.07000000e+04 1.13750000e+04\n",
+      " 1.55750000e+04 1.57750000e+04 1.92750000e+04 2.98500000e+04]\n",
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 11 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_age         32586 non-null  int64  \n",
+      " 1   customer_income      32586 non-null  float64\n",
+      " 2   home_ownership       32586 non-null  int64  \n",
+      " 3   employment_duration  32586 non-null  int64  \n",
+      " 4   loan_intent          32586 non-null  int64  \n",
+      " 5   loan_grade           32586 non-null  int64  \n",
+      " 6   loan_amnt            32586 non-null  float64\n",
+      " 7   loan_int_rate        29470 non-null  float64\n",
+      " 8   term_years           32586 non-null  int64  \n",
+      " 9   cred_hist_length     32586 non-null  int64  \n",
+      " 10  Current_loan_status  32582 non-null  object \n",
+      "dtypes: float64(3), int64(7), object(1)\n",
+      "memory usage: 2.7+ MB\n",
+      "None\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.loan_amnt.unique())\n",
+    "print(data.info())\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "21077504",
+   "metadata": {
+    "papermill": {
+     "duration": 0.021655,
+     "end_time": "2024-06-09T09:30:24.261331",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:24.239676",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Inspecting the loan_int_rate\n",
+    "* Replacing the missing values with the mode as mode will also be a good factor and some time mean may be lead to incorrect prediction in case of outlier "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "id": "8f5d44d0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:24.296965Z",
+     "iopub.status.busy": "2024-06-09T09:30:24.296518Z",
+     "iopub.status.idle": "2024-06-09T09:30:24.309320Z",
+     "shell.execute_reply": "2024-06-09T09:30:24.307339Z"
+    },
+    "papermill": {
+     "duration": 0.034163,
+     "end_time": "2024-06-09T09:30:24.312434",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:24.278271",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "3116\n",
+      "0    7.51\n",
+      "Name: loan_int_rate, dtype: float64\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.loan_int_rate.isna().sum())\n",
+    "print(data.loan_int_rate.mode())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "id": "99b2b66e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:24.359727Z",
+     "iopub.status.busy": "2024-06-09T09:30:24.359100Z",
+     "iopub.status.idle": "2024-06-09T09:30:26.927190Z",
+     "shell.execute_reply": "2024-06-09T09:30:26.925789Z"
+    },
+    "papermill": {
+     "duration": 2.594342,
+     "end_time": "2024-06-09T09:30:26.930087",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:24.335745",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_18/2112608901.py:4: FutureWarning: Calling float on a single element Series is deprecated and will raise a TypeError in the future. Use float(ser.iloc[0]) instead\n",
+      "  return float(data.loan_int_rate.mode())\n"
+     ]
+    }
+   ],
+   "source": [
+    "#Handling the missing value\n",
+    "def handle_loan_int_rate(value):\n",
+    "    if str(value)=='nan':\n",
+    "        return float(data.loan_int_rate.mode())\n",
+    "    else:\n",
+    "        return value\n",
+    "\n",
+    "data['loan_int_rate']=data['loan_int_rate'].apply(handle_loan_int_rate)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "id": "3a2f878f",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:26.966506Z",
+     "iopub.status.busy": "2024-06-09T09:30:26.966006Z",
+     "iopub.status.idle": "2024-06-09T09:30:26.983643Z",
+     "shell.execute_reply": "2024-06-09T09:30:26.982347Z"
+    },
+    "papermill": {
+     "duration": 0.039383,
+     "end_time": "2024-06-09T09:30:26.986315",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:26.946932",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 11 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_age         32586 non-null  int64  \n",
+      " 1   customer_income      32586 non-null  float64\n",
+      " 2   home_ownership       32586 non-null  int64  \n",
+      " 3   employment_duration  32586 non-null  int64  \n",
+      " 4   loan_intent          32586 non-null  int64  \n",
+      " 5   loan_grade           32586 non-null  int64  \n",
+      " 6   loan_amnt            32586 non-null  float64\n",
+      " 7   loan_int_rate        32586 non-null  float64\n",
+      " 8   term_years           32586 non-null  int64  \n",
+      " 9   cred_hist_length     32586 non-null  int64  \n",
+      " 10  Current_loan_status  32582 non-null  object \n",
+      "dtypes: float64(3), int64(7), object(1)\n",
+      "memory usage: 2.7+ MB\n",
+      "None\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.info())\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c23bc3f2",
+   "metadata": {
+    "papermill": {
+     "duration": 0.016676,
+     "end_time": "2024-06-09T09:30:27.019865",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:27.003189",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Inspecting the Current_loan_status\n",
+    "### this is categorical variable so need to need to encode the Variable for the ML model , This I am not doing with this part "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "id": "b7499de6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:27.055456Z",
+     "iopub.status.busy": "2024-06-09T09:30:27.055017Z",
+     "iopub.status.idle": "2024-06-09T09:30:27.066504Z",
+     "shell.execute_reply": "2024-06-09T09:30:27.065258Z"
+    },
+    "papermill": {
+     "duration": 0.032071,
+     "end_time": "2024-06-09T09:30:27.068845",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:27.036774",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "NO DEFAULT\n"
+     ]
+    }
+   ],
+   "source": [
+    "# print(type(str(data.Current_loan_status.unique()[2])))\n",
+    "# print(type(data.Current_loan_status.unique()[1]))\n",
+    "print(data.Current_loan_status.mode()[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "id": "d2b44237",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:27.105102Z",
+     "iopub.status.busy": "2024-06-09T09:30:27.104658Z",
+     "iopub.status.idle": "2024-06-09T09:30:27.146380Z",
+     "shell.execute_reply": "2024-06-09T09:30:27.145104Z"
+    },
+    "papermill": {
+     "duration": 0.063307,
+     "end_time": "2024-06-09T09:30:27.149243",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:27.085936",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Hanling missing values for the Current_loan_status\n",
+    "def handle_current_loan_status(value):\n",
+    "    if str(value)=='nan':\n",
+    "        return (data.Current_loan_status.mode()[0])\n",
+    "    else:\n",
+    "        return value\n",
+    "\n",
+    "data['Current_loan_status']=data['Current_loan_status'].apply(handle_current_loan_status)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "id": "f30f0cc1",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:27.185659Z",
+     "iopub.status.busy": "2024-06-09T09:30:27.185204Z",
+     "iopub.status.idle": "2024-06-09T09:30:27.197743Z",
+     "shell.execute_reply": "2024-06-09T09:30:27.196438Z"
+    },
+    "papermill": {
+     "duration": 0.033861,
+     "end_time": "2024-06-09T09:30:27.200496",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:27.166635",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Current_loan_status\n",
+      "NO DEFAULT    25746\n",
+      "DEFAULT        6840\n",
+      "Name: count, dtype: int64\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(data.Current_loan_status.value_counts())\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "id": "8ace6135",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:27.240184Z",
+     "iopub.status.busy": "2024-06-09T09:30:27.239742Z",
+     "iopub.status.idle": "2024-06-09T09:30:27.255614Z",
+     "shell.execute_reply": "2024-06-09T09:30:27.254198Z"
+    },
+    "papermill": {
+     "duration": 0.039534,
+     "end_time": "2024-06-09T09:30:27.258209",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:27.218675",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "#Encoding the data \n",
+    "from sklearn.preprocessing import LabelEncoder\n",
+    "le=LabelEncoder()\n",
+    "data['Current_loan_status']=le.fit_transform(data['Current_loan_status'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "id": "887c5722",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-09T09:30:27.295191Z",
+     "iopub.status.busy": "2024-06-09T09:30:27.294780Z",
+     "iopub.status.idle": "2024-06-09T09:30:27.307887Z",
+     "shell.execute_reply": "2024-06-09T09:30:27.306456Z"
+    },
+    "papermill": {
+     "duration": 0.034697,
+     "end_time": "2024-06-09T09:30:27.310573",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:27.275876",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<class 'pandas.core.frame.DataFrame'>\n",
+      "RangeIndex: 32586 entries, 0 to 32585\n",
+      "Data columns (total 11 columns):\n",
+      " #   Column               Non-Null Count  Dtype  \n",
+      "---  ------               --------------  -----  \n",
+      " 0   customer_age         32586 non-null  int64  \n",
+      " 1   customer_income      32586 non-null  float64\n",
+      " 2   home_ownership       32586 non-null  int64  \n",
+      " 3   employment_duration  32586 non-null  int64  \n",
+      " 4   loan_intent          32586 non-null  int64  \n",
+      " 5   loan_grade           32586 non-null  int64  \n",
+      " 6   loan_amnt            32586 non-null  float64\n",
+      " 7   loan_int_rate        32586 non-null  float64\n",
+      " 8   term_years           32586 non-null  int64  \n",
+      " 9   cred_hist_length     32586 non-null  int64  \n",
+      " 10  Current_loan_status  32586 non-null  int64  \n",
+      "dtypes: float64(3), int64(8)\n",
+      "memory usage: 2.7 MB\n"
+     ]
+    }
+   ],
+   "source": [
+    "# how we an find fill the value of interest rate where the loan_type is educatio\n",
+    "data.info()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "31e1e791",
+   "metadata": {
+    "papermill": {
+     "duration": 0.017545,
+     "end_time": "2024-06-09T09:30:27.345634",
+     "exception": false,
+     "start_time": "2024-06-09T09:30:27.328089",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "## Thanks All the things are Done ......"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "datasetId": 5170437,
+     "sourceId": 8634488,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 30732,
+   "isGpuEnabled": false,
+   "isInternetEnabled": false,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.13"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 11.963273,
+   "end_time": "2024-06-09T09:30:27.986556",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2024-06-09T09:30:16.023283",
+   "version": "2.5.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
